@@ -4,6 +4,7 @@ import (
 	"flag"
 	"log"
 	"os"
+	"strings"
 
 	"net"
 	"net/http"
@@ -42,7 +43,15 @@ func main() {
 
 	var err error
 	if *serveFcgi {
-		if l, err := net.Listen("tcp", *address); err == nil {
+		socket := strings.Split(*address, ":")
+		if socket[0] == "unix" {
+			os.Remove(socket[1])
+		} else {
+			socket[0] = "tcp"
+			socket[1] = *address
+		}
+
+		if l, err := net.Listen(socket[0], socket[1]); err == nil {
 			log.Println("Starting FastCGI daemon listening on", *address)
 			err = fcgi.Serve(l, h)
 		}
@@ -58,7 +67,7 @@ func main() {
 }
 
 func usage() {
-	os.Stderr.WriteString("usage: cgd [-s] -c prog [-w wdir] [-a addr]\n")
+	os.Stderr.WriteString("usage: cgd [-f] -c prog [-w wdir] [-a :PORT|unix:SOCKET]\n")
 	flag.PrintDefaults()
 	os.Exit(2)
 }
