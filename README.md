@@ -13,7 +13,7 @@ Homepage: <http://repo.cat-v.org/cgd/>
 Install Instructions
 --------------------
 
-	go get github.com/uriel/cgd/
+	go get github.com/jeremdow/cgd/
 
 Will install as $GOPATH/bin/cgd
 
